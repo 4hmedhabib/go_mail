@@ -1,3 +1,6 @@
+body {
+	background-color: rgb(243, 243, 243);
+}
 .img-circle {
 	width: 64px;
 	height: 64px;
@@ -6,4 +9,14 @@
 
 .width-mg {
 	width: 100%;
+}
+
+.relativer {
+	position: relative;
+}
+
+.sender {
+	position: absolute;
+	top: 50px;
+	right: 50px;
 }
