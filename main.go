@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"log"
 
-	"github.com/4hmedhabib/go_mail/configs"
 	"gopkg.in/gomail.v2"
 )
 
@@ -21,26 +20,21 @@ type Template struct {
 	Body string
 }
 
-func main() {
-	configs.Configs()
-	mailConfig := configs.Conf.Mail
-	messageConfig := configs.Conf.Message
-
-	dialer := setupSMTP(mailConfig)
-	options := MailOptions{
-		Dialer:      dialer,
-		From:        messageConfig.From,
-		Subject:     messageConfig.Subject,
-		To:          []string{"4hmedhabib@gmail.com"},
-		Body:        messageConfig.Body,
-		Attachments: []string{},
-	}
-
-	SendEmail(&options)
-
+type Mail struct {
+	Host          string `json:"host"`
+	Port          int    `json:"port"`
+	User          string `json:"user"`
+	Password      string `json:"password"`
+	SkipVerifyTLS bool   `json:"skipVerifyTLS"`
 }
 
-func setupSMTP(config configs.Mail) *gomail.Dialer {
+func Init(config Mail) *gomail.Dialer {
+	dialer := setupSMTP(config)
+
+	return dialer
+}
+
+func setupSMTP(config Mail) *gomail.Dialer {
 	// Set up SMTP server configuration
 	dialer := gomail.NewDialer(config.Host, config.Port, config.User, config.Password)
 	dialer.TLSConfig = &tls.Config{InsecureSkipVerify: config.SkipVerifyTLS}
@@ -48,7 +42,7 @@ func setupSMTP(config configs.Mail) *gomail.Dialer {
 	return dialer
 }
 
-func SendEmail(options *MailOptions) {
+func SendEmail(options *MailOptions) (bool, error) {
 	m := gomail.NewMessage()
 	m.SetHeader("From", options.From)
 	m.SetHeader("To", options.To...)
@@ -64,8 +58,9 @@ func SendEmail(options *MailOptions) {
 
 	// Send email
 	if err := options.Dialer.DialAndSend(m); err != nil {
-		log.Fatalf("Failed to send email: %v", err)
+		log.Printf("Failed to send email: %v", err)
+		return false, err
 	}
 
-	log.Println("Email sent successfully!")
+	return true, nil
 }
