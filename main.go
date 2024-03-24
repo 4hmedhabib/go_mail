@@ -2,7 +2,10 @@ package go_mail
 
 import (
 	"crypto/tls"
+	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 
 	"gopkg.in/gomail.v2"
 )
@@ -52,8 +55,17 @@ func SendEmail(options *MailOptions) (bool, error) {
 	m.SetBody("text/html", options.Body)
 
 	// Attach files
-	for _, file := range options.Attachments {
-		m.Attach(file)
+	for _, filePath := range options.Attachments {
+		// Check if file exists
+		if _, err := os.Stat(filePath); os.IsNotExist(err) {
+			fmt.Printf("Error attaching file: [%v] %v\n", filePath, err)
+		}
+
+		// Get file name
+		_, fileName := filepath.Split(filePath)
+
+		// Attach file
+		m.Attach(filePath, gomail.Rename(fileName))
 	}
 
 	// Send email
