@@ -1,7 +1,7 @@
 ## Installation
 
 To use go_mail in your GoLang project, simply install the package using `go get`:
-`go get github.com/4hmedhabib/go_mail`
+`go get -u github.com/4hmedhabib/go_mail`
 
 # GoLang Package for Sending Emails via SMTP
 
