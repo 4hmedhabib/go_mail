@@ -14,6 +14,7 @@ type MailOptions struct {
 	Dialer      *gomail.Dialer
 	From        string
 	To          []string
+	Cc          []string
 	Subject     string
 	Body        string
 	Attachments []string
@@ -49,6 +50,7 @@ func SendEmail(options *MailOptions) (bool, error) {
 	m := gomail.NewMessage()
 	m.SetHeader("From", options.From)
 	m.SetHeader("To", options.To...)
+	m.SetHeader("Cc", options.Cc...)
 	// Set subject
 	m.SetHeader("Subject", options.Subject)
 
